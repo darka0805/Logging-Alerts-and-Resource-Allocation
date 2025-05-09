@@ -23,6 +23,5 @@ def log_interaction(data):
 
     client.write_points([point])
 
-    # Send suspicious data to alert engine (if SSN is detected)
     if "ssn" in str(data).lower():
         requests.post("http://logger:5001/alert", json={"time": timestamp, "event": "PII", "description": str(data)})
