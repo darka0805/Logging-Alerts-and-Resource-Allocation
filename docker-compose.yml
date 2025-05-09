@@ -1,0 +1,52 @@
+version: "3.8"
+services:
+  web:
+    build: ./web_app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - influxdb
+      - logger
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+  
+  celery_worker_1:
+    build: ./web_app
+    depends_on:
+      - influxdb
+      - logger
+      - redis
+    command: celery -A celery_app worker --loglevel=info --concurrency=2
+  
+  celery_worker_2:
+    build: ./web_app
+    depends_on:
+      - influxdb
+      - logger
+      - redis
+    command: celery -A celery_app worker --loglevel=info --concurrency=2
+
+  logger:
+    build: ./logger_alert_engine
+    volumes:
+      - ./logger_alert_engine/error_reports:/app/error_reports
+    command: python monitor.py
+    ports:
+      - "5001:5001"
+    depends_on:
+      - influxdb
+
+  influxdb:
+    image: influxdb:1.8
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=logs
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=admin123
+    volumes:
+      - ./influxdb_data:/var/lib/influxdb
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
