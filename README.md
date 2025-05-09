@@ -1,4 +1,10 @@
 # Logging-Alerts-and-Resource-Allocation
+
+### Project Overview
+This project is a microservice-based logging and alerting system built with FastAPI, Celery, Redis, InfluxDB, and Docker. It allows asynchronous processing of user interactions, logs structured data into a time-series database, and triggers alerts for sensitive information (e.g., PII) through a dedicated alerting service.
+
+### Structure
+
 ```
 HW7/
 ├── influxdb_data/
